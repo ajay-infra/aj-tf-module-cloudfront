@@ -11,6 +11,33 @@ Core invariant: CloudFront origin is always active.<domain> CNAME.
 During blue/green swap: only active_color changes → Route53 flips → done.
 CloudFront distribution is NEVER modified during cluster upgrades.
 
+## Where It Fits
+
+**Architecture layer:** L1 — Edge (CDN + WAF + DNS)
+**Provisioned by:** Run once per domain after EKS + ALB + Ingress are live
+**State key:** `workload/<mode>/<env>/cloudfront/terraform.tfstate` (planned)
+**Depends on:** ALB DNS name from AWS LBC after Ingress is created on the workload cluster
+
+## How to Use
+
+Run after the workload cluster is up and the application Ingress is deployed (AWS LBC creates the ALB):
+
+```bash
+terraform init \
+  -backend-config="bucket=<TF_STATE_BUCKET>" \
+  -backend-config="key=workload/blue-green/<env>/cloudfront/terraform.tfstate" \
+  -backend-config="region=us-east-1" \
+  -backend-config="use_lockfile=true"
+
+terraform apply -var-file=envs/prod.tfvars \
+  -var="blue_alb_dns=<alb-dns-from-kubectl-get-ingress>" \
+  -var="active_color=blue"
+```
+
+Blue/green cutover: change `active_color` from `blue` to `green` and re-apply. Route53 flips `active.<domain>` CNAME — CloudFront distribution is never modified.
+
+Lower `active_dns_ttl` to `60` in the tfvars 24 hours before a planned cutover to reduce propagation delay.
+
 ## Module Structure
 
 ```
