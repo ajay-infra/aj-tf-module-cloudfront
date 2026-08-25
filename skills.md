@@ -1,14 +1,18 @@
 # skills.md — aj-tf-module-cloudfront
 
 ## Purpose
-Provisions a CloudFront distribution with blue/green origin support, Route53 DNS, ACM certificate, and WAF integration for blue/green ALB traffic splitting.
+Provisions a CloudFront distribution, Route53 DNS, ACM certificate, and WAF integration.
+Blue/green cutover is a hard CNAME flip (`active_color` moves `active.<domain>` from
+blue ALB to green ALB in one apply) — NOT weighted/gradual traffic splitting. The
+CloudFront distribution itself is never modified during cutover; only the Route53
+record behind its origin changes.
 
 ## Type
 `tf-module`
 
 ## Stable ref
 ```
-source = "github.com/ajaylakma/aj-tf-module-cloudfront?ref=cloudfront-01"
+source = "github.com/ajay-infra/aj-tf-module-cloudfront?ref=v1.0.0"
 ```
 
 ## Key inputs
@@ -24,11 +28,13 @@ source = "github.com/ajaylakma/aj-tf-module-cloudfront?ref=cloudfront-01"
 | `active_color` | blue \| green — active origin |
 
 ## AWS tags applied
-`Env`, `Team`, `ManagedBy`, `CostCenter`, `Model`, `Customer`
+`Project`, `ManagedBy`, `Repository`, `Environment`, `Team`, `CostCenter` (set in
+`locals.full_tags`), plus whatever's in `var.tags`. No `Env`, `Model`, or `Customer`
+tag exists in this module.
 
 ## Branching convention
 - `main` — active development
-- `cloudfront-01` — stable pinned release
+- semver tags (`v1.0.0`, ...) — stable pinned releases, per `README.md` usage examples
 
 ## CI checks
 fmt, validate, plan (dry-run), tfsec/checkov
