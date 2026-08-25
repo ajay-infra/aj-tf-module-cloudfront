@@ -98,7 +98,7 @@ Bot control is disabled by default — enable for prod when bot traffic is a con
 
 ```hcl
 module "cloudfront" {
-  source = "github.com/ajay-infra/aj-tf-module-cloudfront?ref=v0.1.0"
+  source = "github.com/ajay-infra/aj-tf-module-cloudfront?ref=v1.0.0"
 
   domain_name    = "platform.example.com"
   hosted_zone_id = data.aws_route53_zone.main.zone_id
@@ -154,5 +154,5 @@ module "cloudfront" {
 
 | Tool | Version |
 |---|---|
-| Terraform | `= 1.7.5` |
+| Terraform | `= 1.10.5` |
 | AWS provider | `= 5.100.0` |
