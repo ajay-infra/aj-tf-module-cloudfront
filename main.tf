@@ -211,6 +211,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     id     = "expire-logs"
     status = "Enabled"
 
+    # Required by the provider whenever a rule has no filter/prefix — applies
+    # the rule to every object in the bucket. Currently a warning ("will be an
+    # error in a future version"); confirmed via `terraform validate` 2026-08-25.
+    filter {}
+
     expiration {
       days = 90
     }
