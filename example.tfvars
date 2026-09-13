@@ -31,5 +31,5 @@ waf_enabled         = true
 bot_control_enabled = false
 rate_limit_per_ip   = 1000
 
-team        = "infra-core"
+team        = "team-0001"   # a team code — aj-infra/envs/org/teams.yaml
 cost_center = "infra-2026-q1"
